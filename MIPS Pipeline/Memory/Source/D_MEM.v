@@ -31,4 +31,11 @@ module D_MEM(
                 read_data <= DMEM[address];    
         end    
     end
+    
+    integer i;
+    initial begin
+        $readmemb ("data.txt", DMEM);
+        for (i=0; i<6; i = i+1)
+            $display(DMEM[i]);
+        end
 endmodule

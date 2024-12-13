@@ -41,4 +41,11 @@ module Memory1(
     end
     
     always @(posedge clk) data <= MEM[addr];
+    
+    integer i;
+    initial begin
+        $readmemb("risc.txt", MEM);
+        for (i=0; i<24; i = i+1)
+            $display(MEM[i]);
+        end
 endmodule

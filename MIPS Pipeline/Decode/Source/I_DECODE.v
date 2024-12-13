@@ -1,74 +1,59 @@
 `timescale 1ns / 1ps
 module I_DECODE(
-    input clk, rst,
-    input wire [5:0] opcode,
-    input wire [4:0] rs,
-	input wire [4:0] rt,
-	input wire [4:0] rd,
-	input wire [31:0] writedata,
-	input wire regwrite,
-	input wire [15:0] nextend,
-	input wire [1:0] ctlwb_out,
-	input wire [2:0] ctlm_out,
-	input wire [3:0] ctlex_out,
-	input wire [31:0] npc,
-	input wire [31:0] readdat1,
-	input wire [31:0] readdat2,
-	input wire [31:0] signext_out,
-	input wire [4:0] instr_2016,
-	input wire [4:0] instr_1511,
-	
-	output reg [3:0] EX,
-	output reg [2:0] M,
-	output reg [1:0] WB,
-	output reg [31:0] A,
-	output reg [31:0] B,
-	output reg [31:0] extend,
-	output reg [1:0] wb_ctlout,
-	output reg [2:0] m_ctlout,
-	output reg [3:0] ex_ctlout,
-	output reg [31:0] npcout,
-	output reg [31:0] rdata1out,
-	output reg [31:0] rdata2out,
-	output reg [31:0] s_extendout,
-	output reg [4:0] instrout_2016,
-	output reg [4:0] instrout_1511
+    input [31:0] IF_ID_instr, IF_ID_NPC,
+    input [31:0] writedata,
+    input [4:0] rd,
+    input regwrite,
+    
+    output [1:0] wb_ctlout,
+    output [2:0] m_ctlout,
+    output [3:0] ex_ctlout,
+    output [31:0] npcout, rdata1out, rdata2out, s_extendout,
+    output [4:0] instrout_1511, instrout_2016,
+    input clk, 
+    input reset
     );
     
+    wire [1:0] WB;
+    wire [2:0] M;
+    wire [3:0] EX;
+    wire [31:0] A, B;
+    wire [31:0] IF_ID_instr_ext;
+    
     control control (
-        .opcode(opcode),
+        .opcode(IF_ID_instr[25:21]),
         .EX(EX),
         .M(M),
         .WB(WB)
     );
     
     register register (
-        .rs(rs),
+        .rs(IF_ID_instr[25:21]),
         .rt(rt),
-        .rd(rd),
+        .rd(IF_ID_instr[20:16]),
         .writedata(writedata),
         .regwrite(regwrite),
         .A(A),
         .B(B),
         .clk(clk),
-        .rst(rst)
+        .reset(reset)
     );
     
     s_extend s_extend (
-        .nextend(nextend),
-        .extend(extend)
+        .nextend(IF_ID_instr[15:0]),
+        .extend(IF_ID_instr_ext[31:0])
     );
     
     ID_EX ID_EX (
-        .ctlwb_out(ctlwb_out),
-        .ctlm_out(ctlm_out),
-        .ctlex_out(ctlex_out),
-        .npc(npc),
-        .readdat1(readdat1),
-        .readdat2(readdat2),
-        .signext_out(signext_out),
-        .instr_2016(instr_2016),
-        .instr_1511(instr_1511),
+        .ctlwb_out(WB),
+        .ctlm_out(M),
+        .ctlex_out(EX),
+        .npc(IF_ID_NPC),
+        .readdat1(A),
+        .readdat2(B),
+        .signext_out(IF_ID_instr_ext[31:0]),
+        .instr_2016(IF_ID_instr_ext[15:11]),
+        .instr_1511(IF_ID_instr_ext[20:16]),
         .wb_ctlout(wb_ctlout),
         .m_ctlout(m_ctlout),
         .ex_ctlout(ex_ctlout),
@@ -77,7 +62,9 @@ module I_DECODE(
         .rdata2out(rdata2out),
         .s_extendout(s_extendout),
         .instrout_2016(instrout_2016),
-        .instrout_1511(instrout_1511)
+        .instrout_1511(instrout_1511),
+        .clk(clk),
+        .reset(reset)
     );
     
 endmodule

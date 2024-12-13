@@ -19,7 +19,7 @@ module ID_EX (
 	output reg [31:0] s_extendout,
 	output reg [4:0] instrout_2016,
 	output reg [4:0] instrout_1511,
-	input clk, rst
+	input clk, reset
 );
 
 initial begin //set reg values to 0
@@ -34,8 +34,8 @@ initial begin //set reg values to 0
 	instrout_1511 = 0;
 end
 
-always @(posedge clk or rst) begin
-	if (rst) begin //reset reg back to 0
+always @(posedge clk or reset) begin
+	if (reset) begin //reset reg back to 0
 		wb_ctlout <= 0;
         m_ctlout <= 0;
         ex_ctlout <= 0;

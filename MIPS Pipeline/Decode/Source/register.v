@@ -8,7 +8,7 @@ module register (
 	output reg [31:0] A,
 	output reg [31:0] B,
 	input clk,
-	input rst
+	input reset
 );
 
 reg [31:0] registers[0:31];
@@ -19,8 +19,8 @@ always @* begin
 	B = registers [rd];
 	end
 
-always @(posedge clk or rst) begin
-	if(rst) begin
+always @(posedge clk or reset) begin
+	if(reset) begin
 		for (i = 0; i<32; i = i+1)
 			registers[i] = 0;
 	end
